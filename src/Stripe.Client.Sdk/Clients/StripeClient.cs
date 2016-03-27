@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace Stripe.Client.Sdk.Clients
 {
     public class StripeClient : IStripeClient
     {
-        private static readonly Version StripeClientVersion = Assembly.GetExecutingAssembly().GetName().Version;
+        private static readonly Version StripeClientVersion = typeof(StripeClient).GetTypeInfo().Assembly.GetName().Version;
 
         private readonly string _apiEndpoint = "https://api.stripe.com";
         private readonly IStripeConfiguration _configuration;
@@ -283,29 +282,22 @@ namespace Stripe.Client.Sdk.Clients
 
         private static bool IsValidChildModel(object obj)
         {
-            switch (Type.GetTypeCode(obj.GetType()))
-            {
-                case TypeCode.Boolean:
-                case TypeCode.Byte:
-                case TypeCode.Char:
-                case TypeCode.DateTime:
-                case TypeCode.DBNull:
-                case TypeCode.Decimal:
-                case TypeCode.Double:
-                case TypeCode.Empty:
-                case TypeCode.Int16:
-                case TypeCode.Int32:
-                case TypeCode.Int64:
-                case TypeCode.SByte:
-                case TypeCode.Single:
-                case TypeCode.String:
-                case TypeCode.UInt16:
-                case TypeCode.UInt32:
-                case TypeCode.UInt64:
-                    return false;
-                default:
-                    return true;
-            }
+            if (obj == null) return false;
+            if (obj is bool) return false;
+            if (obj is byte || obj is sbyte) return false;
+            if (obj is char) return false;
+            if (obj is DateTime) return false;
+#if !DOTNET
+            if (obj is DBNull) return false;
+#endif
+            if (obj is Decimal) return false;
+            if (obj is Double) return false;
+            if (obj is Single) return false;
+            if (obj is Int16 || obj is UInt16) return false;
+            if (obj is Int32 || obj is UInt32) return false;
+            if (obj is Int64 || obj is UInt64) return false;
+            if (obj is String) return false;
+            return true;
         }
     }
 }

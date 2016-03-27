@@ -1,7 +1,8 @@
-using System.Configuration;
-
 namespace Stripe.Client.Sdk.Configuration
 {
+#if !DOTNET
+    using System.Configuration;
+
     public class AppSettingsConfiguration : IStripeConfiguration
     {
         /// <summary>
@@ -37,4 +38,5 @@ namespace Stripe.Client.Sdk.Configuration
             get { return ConfigurationManager.AppSettings["Stripe.AccountId"]; }
         }
     }
+#endif
 }
